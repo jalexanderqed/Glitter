@@ -87,6 +87,10 @@ std::optional<ShadeablePoint> RayTracer::IntersectScene(Ray ray) {
 
 DVec3 RayTracer::Shade(const ShadeablePoint& point, const SceneLights& lights,
                        RecursiveContext context) {
+  context.depth += 1;
+  if (context.depth > options_.max_depth) {
+    return DVec3(0.0);
+  }
   DVec3 diffuse = point.shape->material()
                       ->diff_texture()
                       .Sample(point.shape->GetUv(point.point))
@@ -120,13 +124,22 @@ DVec3 RayTracer::Shade(const ShadeablePoint& point, const SceneLights& lights,
         reflection_color * point.shape->material()->options().reflectivity;
   }
 
-  /*
-    if (point.shape->material()->is_transparent()) {
-      DVec3 refraction_color = CalculateRefractionColor(point, lights, context);
-      total_lighting +=
-          refraction_color * point.shape->material()->options().transparency;
+  // This calculation must always go last.
+  if (point.shape->material()->is_transparent()) {
+    TransparencyData data = CalculateRefractionColor(point, lights, context);
+    double inv_transparency =
+        1.0 - point.shape->material()->options().transparency;
+    total_lighting =
+        point.shape->material()->options().transparency * data.color +
+        inv_transparency * total_lighting;
+    if (data.absorption_percent > 0) {
+      // This occurs if we are looking through a transparent object at the
+      // current point, in which case we need to decrease how much light is
+      // transmitted.
+      total_lighting = total_lighting * (1 - data.absorption_percent) +
+                       data.absorption_color * data.absorption_percent;
     }
-    */
+  }
 
   return total_lighting;
 }
@@ -144,11 +157,6 @@ DVec3 RayTracer::IntersectAndShade(Ray ray, const SceneLights& lights,
 DVec3 RayTracer::CalculateReflectionColor(const ShadeablePoint& start_point,
                                           const SceneLights& lights,
                                           RecursiveContext context) {
-  context.depth += 1;
-  if (context.depth > options_.max_depth) {
-    return DVec3(0.0);
-  }
-
   DVec3 normal = start_point.shape->GetNormal(start_point.point);
   Ray ray = {
       .origin = start_point.point,
@@ -160,11 +168,6 @@ DVec3 RayTracer::CalculateReflectionColor(const ShadeablePoint& start_point,
 RayTracer::TransparencyData RayTracer::CalculateRefractionColor(
     const ShadeablePoint& start_point, const SceneLights& lights,
     RecursiveContext context) {
-  context.depth += 1;
-  if (context.depth > options_.max_depth) {
-    return {DVec3(0.0), 0.0, DVec3(0.0)};
-  }
-
   DVec3 normal = start_point.shape->GetNormal(start_point.point);
   double normal_dot = glm::dot(start_point.ray.dir, normal);
 

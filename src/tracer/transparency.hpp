@@ -2,16 +2,17 @@
 #define TRACER_TRANSPARENCY_HPP
 
 #include <list>
-#include <utility>
 #include <map>
 #include <optional>
+#include <utility>
 
+#include "learnopengl/glitter.hpp"
 #include "tracer/intersectable.hpp"
 
 class Model;
 
 class InsideModelStack {
-public:
+ public:
   void Push(const ShadeablePoint& point);
   bool Contains(const Model* model);
   std::optional<ShadeablePoint> Pop(const Model* model);
@@ -22,11 +23,13 @@ public:
   Material* CurrentMaterial();
 
  private:
-void RemoveFromVector(const Model* model);
+  std::optional<ShadeablePoint> RemoveFromVector(const Model* model);
 
   std::list<std::pair<const Model*, ShadeablePoint>> inside_stack_;
-  std::map<const Model*, ShadeablePoint> inside_map_;
   static Material air_;
 };
+
+DVec3 Refract(const DVec3& in_vec, const DVec3& normal, double oldIR,
+              double newIR);
 
 #endif

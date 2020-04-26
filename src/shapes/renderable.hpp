@@ -12,6 +12,7 @@ struct ShaderSet {
 
 class Renderable {
  public:
+  virtual ~Renderable() = default;
   virtual void Draw(ShaderSet shaders, glm::mat4 model_mat) = 0;
   virtual void GetTris(glm::mat4 model_mat, std::vector<InterPtr>* tris) = 0;
 };

@@ -4,20 +4,20 @@
 #include <utility>
 
 #include "boids/simulation.hpp"
-#include "texture/box_textures.hpp"
-#include "shapes/elementary_models.hpp"
-#include "realtime/fps_counter.hpp"
-#include "shapes/interpolation.hpp"
-#include "shapes/iterable_mesh.hpp"
 #include "learnopengl/camera.h"
 #include "learnopengl/model.h"
 #include "learnopengl/shader_m.h"
+#include "realtime/fps_counter.hpp"
+#include "realtime/multi_light_renderer.hpp"
+#include "realtime/point_shadows_dynamic_renderer.hpp"
+#include "realtime/rt_renderer.hpp"
+#include "shapes/elementary_models.hpp"
+#include "shapes/interpolation.hpp"
+#include "shapes/iterable_mesh.hpp"
 #include "shapes/mesh_iterator.hpp"
 #include "shapes/mutation_generator.hpp"
-#include "realtime/point_shadows_dynamic_renderer.hpp"
-#include "realtime/multi_light_renderer.hpp"
-#include "realtime/rt_renderer.hpp"
 #include "shapes/onion.hpp"
+#include "texture/box_textures.hpp"
 #include "texture/texture_gen.hpp"
 
 std::unique_ptr<RtRenderer> CurrentScene(
@@ -235,7 +235,10 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
     // Upper sphere
     Texture texture = GetColorTexture(RgbPix({0, 0, 0}), 1, 1);
     Material::Options mat_opts;
-    mat_opts.reflectivity = 0.2;
+    mat_opts.transparency = 0.9;
+    mat_opts.index = 1.5;
+    mat_opts.absorption_per_unit = 0.6;
+    mat_opts.absorption_color = DVec3(0.5, 0, 0.5);
     Material material(std::move(texture), mat_opts);
     std::unique_ptr<IterableMesh> it_mesh(new IterableSphere(0.5f));
     BasicMeshIterator mesh_iterator(100, 100);
@@ -246,6 +249,21 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
     glm::mat4 model_mat = glm::mat4(1.0f);
     model_mat = glm::translate(model_mat, glm::vec3(2.5, -1.0, 2.0));
     renderer->AddModel(std::move(generated_model), model_mat);
+  }
+  {
+    // Transparent box
+    Texture texture = GetColorTexture(RgbPix({0, 0, 0}), 1, 1);
+    Material::Options mat_opts;
+    mat_opts.transparency = 0.9;
+    mat_opts.index = 1.1;
+    mat_opts.absorption_per_unit = 0.6;
+    mat_opts.absorption_color = DVec3(0.5, 0, 0.5);
+    Material material(std::move(texture), mat_opts);
+    std::unique_ptr<Model> model = BuildBoxModel(material);
+    glm::mat4 model_mat = glm::mat4(1.0f);
+    model_mat = glm::translate(model_mat, glm::vec3(-3.5, -1.5, 1.0));
+    model_mat = glm::scale(model_mat, glm::vec3(0.5));
+    renderer->AddModel(std::move(model), model_mat);
   }
   {
     // Face box
@@ -275,7 +293,7 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
     std::unique_ptr<Model> generated_model(new Model({mesh}));
     glm::mat4 model_mat = glm::mat4(1.0f);
     model_mat = glm::translate(model_mat, glm::vec3(-1.5, -2.0, -3.0));
-    renderer->AddModel(std::move(generated_model), model_mat);
+    // renderer->AddModel(std::move(generated_model), model_mat);
   }
   {
     Texture texture = GetWhiteTexture();

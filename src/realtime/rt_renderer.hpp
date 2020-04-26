@@ -18,6 +18,7 @@
 class RtRenderer {
  public:
   RtRenderer(bool windowed_mode = true) : windowed_mode_(windowed_mode) {}
+  virtual ~RtRenderer() = default;
   virtual GLFWwindow* Init(const std::string& window_name) = 0;
   virtual void AddModel(const std::string& file_path, glm::mat4 model_matrix);
   virtual void AddModel(std::unique_ptr<Renderable> model,
