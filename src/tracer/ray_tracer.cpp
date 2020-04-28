@@ -82,6 +82,7 @@ Texture RayTracer::Render(Camera camera, const SceneLights& scene_lights) {
   }*/
 
 std::optional<ShadeablePoint> RayTracer::IntersectScene(Ray ray) {
+  ray.origin = ray.origin + ray.dir * epsilon(ray.origin);
   return outer_bound_->Intersect(ray);
 }
 
@@ -186,9 +187,9 @@ RayTracer::TransparencyData RayTracer::CalculateRefractionColor(
                   << std::endl;
         exit(-1);
       }
-      DVec3 new_vector = glm::normalize(glm::refract(
-          glm::normalize(start_point.ray.dir), -1.0 * normal,
-          previous_material->options().index / next_material->options().index));
+      DVec3 new_vector = glm::normalize(Refract(
+          glm::normalize(start_point.ray.dir), normal,
+          previous_material->options().index, next_material->options().index));
 
       double new_normal_dot = glm::dot(new_vector, normal);
       if (new_normal_dot >= 0) {
@@ -222,9 +223,9 @@ RayTracer::TransparencyData RayTracer::CalculateRefractionColor(
       // Refract light but do not calculate light impedence.
       Material* previous_material = context.inside_models.CurrentMaterial();
       Material* next_material = start_point.shape->material();
-      DVec3 new_vector = glm::normalize(glm::refract(
-          glm::normalize(start_point.ray.dir), -1.0 * normal,
-          previous_material->options().index / next_material->options().index));
+      DVec3 new_vector = glm::normalize(Refract(
+          glm::normalize(start_point.ray.dir), normal,
+          previous_material->options().index, next_material->options().index));
 
       double new_normal_dot = glm::dot(new_vector, normal);
       if (new_normal_dot >= 0) {
@@ -256,9 +257,9 @@ RayTracer::TransparencyData RayTracer::CalculateRefractionColor(
       // Refract light and push to the context object.
       Material* previous_material = context.inside_models.CurrentMaterial();
       Material* next_material = start_point.shape->material();
-      DVec3 new_vector = glm::normalize(glm::refract(
+      DVec3 new_vector = glm::normalize(Refract(
           glm::normalize(start_point.ray.dir), normal,
-          previous_material->options().index / next_material->options().index));
+          previous_material->options().index, next_material->options().index));
       double new_normal_dot = glm::dot(new_vector, normal);
       if (new_normal_dot >= 0) {
         // A total external? refraction occurred. We do not push the object into

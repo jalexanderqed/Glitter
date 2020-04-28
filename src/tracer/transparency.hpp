@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "learnopengl/glitter.hpp"
+#include "learnopengl/model.h"
 #include "tracer/intersectable.hpp"
 
 class Model;
@@ -29,7 +30,6 @@ class InsideModelStack {
   static Material air_;
 };
 
-DVec3 Refract(const DVec3& in_vec, const DVec3& normal, double oldIR,
-              double newIR);
+DVec3 Refract(DVec3 in_vec, DVec3 normal, double oldIR, double newIR);
 
 #endif

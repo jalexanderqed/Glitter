@@ -57,8 +57,8 @@ struct Light {
   glm::vec3 Position;
   glm::vec3 Color;
 
-  float Linear = 0.2f;
-  float Quadratic = 0.4f;
+  float Linear = 0.1f;
+  float Quadratic = 0.1f;
 };
 
 struct SceneLights {

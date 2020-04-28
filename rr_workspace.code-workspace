@@ -9,7 +9,8 @@
 			"ostream": "cpp",
 			"utility": "cpp",
 			"list": "cpp",
-			"limits": "cpp"
+			"limits": "cpp",
+			"type_traits": "cpp"
 		}
 	}
 }

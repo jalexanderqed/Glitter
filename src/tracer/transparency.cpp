@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <optional>
 
+#include "learnopengl/glitter.hpp"
+
 void InsideModelStack::Push(const ShadeablePoint& point) {
   const Model* model = point.shape->GetParentModel();
   RemoveFromVector(model);
@@ -66,17 +68,15 @@ Material InsideModelStack::air_ = Material(Texture(), Material::Options({
                                                           .reflectivity = 0.0,
                                                       }));
 
-DVec3 Refract(const DVec3& in_vec, const DVec3& normal, double oldIR,
-              double newIR) {
-  DVec3 out_vec = -1.0 * inv_vec;
+DVec3 Refract(DVec3 in_vec, DVec3 normal, double oldIR, double newIR) {
+  DVec3 out_vec = glm::normalize(-1.0 * in_vec);
   double dotProd = glm::dot(out_vec, normal);
-  DVec3 outNormal = dotProd < 0 ? -1.0f * normal : normal;
+  DVec3 outNormal = dotProd < 0 ? -1.0 * normal : normal;
 
-  DVec3 in = -1.0f * out;
   double ratio = (oldIR / newIR);
-  double cosine = glm::dot(outNormal, in);
+  double cosine = glm::dot(outNormal, in_vec);
   double sin2 = ratio * ratio * (1.0f - cosine * cosine);
   if (sin2 > 1) return DVec3(0);
-  return glm::normalize(ratio * in -
+  return glm::normalize(ratio * in_vec -
                         (ratio * cosine + sqrt(1.0f - sin2)) * outNormal);
 }

@@ -225,9 +225,11 @@ void MultiLightRenderer::Render() {
 SceneLights MultiLightRenderer::GetLights() const {
   SceneLights lights;
   lights.points = lights_;
-  lights.directional_light_in_dir =
-      glm::normalize(glm::vec3(0.0f) - directional_light_pos_);
-  lights.directional_light_color = directional_light_color_;
+  if (directional_light_enabled_) {
+    lights.directional_light_in_dir =
+        glm::normalize(glm::vec3(0.0f) - directional_light_pos_);
+    lights.directional_light_color = directional_light_color_;
+  }
   return lights;
 }
 

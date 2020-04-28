@@ -33,10 +33,12 @@ class MultiLightRenderer : public RtRenderer {
 
   void set_directional_light_pos(glm::vec3 pos) {
     directional_light_pos_ = pos;
+    directional_light_enabled_ = true;
   }
 
   void set_directional_light_color(glm::vec3 color) {
     directional_light_color_ = color;
+    directional_light_enabled_ = true;
   }
 
  private:
@@ -49,6 +51,7 @@ class MultiLightRenderer : public RtRenderer {
   std::vector<CameraEventHandler*> event_handlers_;
   std::unordered_map<int, bool> key_states_;
 
+  bool directional_light_enabled_ = false;
   bool pause_ = true;
 
   float lastFrameTime = 0.0f;

@@ -175,10 +175,10 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
         .append(object_file)
         .append(file_type);
     glm::mat4 model_mat = glm::mat4(1.0f);
-    model_mat = glm::translate(model_mat, glm::vec3(0.0f, -3.0f, 0.0f));
+    model_mat = glm::translate(model_mat, glm::vec3(0.0f, -3.0f, 3.0f));
     model_mat = glm::scale(model_mat, glm::vec3(0.13f));
     model_mat =
-        glm::rotate(model_mat, (float)(M_PI / -2.0), glm::vec3(0, 1.0f, 0));
+        glm::rotate(model_mat, (float)(M_PI / 2.0), glm::vec3(0, 1.0f, 0));
     renderer->AddModel(file_path, model_mat);
   }
   {
@@ -237,8 +237,6 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
     Material::Options mat_opts;
     mat_opts.transparency = 0.9;
     mat_opts.index = 1.5;
-    mat_opts.absorption_per_unit = 0.6;
-    mat_opts.absorption_color = DVec3(0.5, 0, 0.5);
     Material material(std::move(texture), mat_opts);
     std::unique_ptr<IterableMesh> it_mesh(new IterableSphere(0.5f));
     BasicMeshIterator mesh_iterator(100, 100);
@@ -252,17 +250,28 @@ std::unique_ptr<RtRenderer> HelixGarlicNanoScene(
   }
   {
     // Transparent box
-    Texture texture = GetColorTexture(RgbPix({0, 0, 0}), 1, 1);
+    Texture texture = GetColorTexture(RgbPix({0, 255, 0}), 1, 1);
     Material::Options mat_opts;
-    mat_opts.transparency = 0.9;
-    mat_opts.index = 1.1;
-    mat_opts.absorption_per_unit = 0.6;
-    mat_opts.absorption_color = DVec3(0.5, 0, 0.5);
+    mat_opts.transparency = 0.7;
+    mat_opts.index += 0.02;
     Material material(std::move(texture), mat_opts);
     std::unique_ptr<Model> model = BuildBoxModel(material);
     glm::mat4 model_mat = glm::mat4(1.0f);
     model_mat = glm::translate(model_mat, glm::vec3(-3.5, -1.5, 1.0));
     model_mat = glm::scale(model_mat, glm::vec3(0.5));
+    renderer->AddModel(std::move(model), model_mat);
+  }
+  {
+    // Transparent box inside other box
+    Texture texture = GetColorTexture(RgbPix({255, 0, 255}), 1, 1);
+    Material::Options mat_opts;
+    mat_opts.transparency = 0.5;
+    mat_opts.index += 0.02;
+    Material material(std::move(texture), mat_opts);
+    std::unique_ptr<Model> model = BuildBoxModel(material);
+    glm::mat4 model_mat = glm::mat4(1.0f);
+    model_mat = glm::translate(model_mat, glm::vec3(-3.5, -1.5, 1.0));
+    model_mat = glm::scale(model_mat, glm::vec3(0.25));
     renderer->AddModel(std::move(model), model_mat);
   }
   {

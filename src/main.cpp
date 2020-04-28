@@ -10,6 +10,7 @@
 
 // Standard Headers
 #include <time.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -17,9 +18,9 @@
 #include <sstream>
 #include <string>
 
-#include "scene/example_scenes.hpp"
 #include "learnopengl/filesystem.h"
 #include "realtime/rt_renderer.hpp"
+#include "scene/example_scenes.hpp"
 #include "tracer/acceleration.hpp"
 #include "tracer/bound.hpp"
 #include "tracer/intersectable.hpp"
@@ -94,8 +95,8 @@ int main(int argc, char** argv) {
   if (ops.trace) {
     std::cerr << "Starting ray tracing" << std::endl;
     CameraTracerOpts opts;
-    opts.h_px = 300;
-    opts.w_px = 400;
+    opts.h_px = 600;
+    opts.w_px = 800;
     opts.focal_length = 0.01;
     opts.focus_distance = 5;
     opts.vert_fov = 0.785398;
